@@ -1,0 +1,14 @@
+#translationFrame {
+    border: 1px solid silver;
+    border-radius: 8px;
+    
+
+    background: #EBE8E1;
+    background: -webkit-radial-gradient(left, #EBE8E1, #E8F1FF);
+    background: -moz-radial-gradient(left, #EBE8E1, #E8F1FF);
+    background: radial-gradient(to right, #EBE8E1, #E8F1FF);
+    color: #555;
+    padding: 20px;
+}
+
+.boxShadow {box-shadow: 2px 3px 4px -2px rgba(0,0,0,0.55);}

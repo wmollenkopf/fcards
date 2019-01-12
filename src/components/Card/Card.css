@@ -1,0 +1,18 @@
+#cardFrame {
+    border: 1px solid silver;
+    border-radius: 8px;
+
+
+    background: #EBE8E1;
+    color: #555;
+    padding: 20px;
+    text-align: center;
+}
+/* #nextCard {float: right;} */
+#cardOptions {
+    text-align: right;
+    
+
+}
+
+.boxShadow {box-shadow: 2px 3px 4px -2px rgba(0,0,0,0.55);}
