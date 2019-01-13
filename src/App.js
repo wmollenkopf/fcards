@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 import './App.css';
 import Signin from './components/Signin/Signin';
 import Register from './components/Register/Register';
-import Card from './components/Card/Card';
-import Translation from './components/Translation/Translation';
+import CardQuestion from './components/CardQuestion/CardQuestion';
+import CardAnswer from './components/CardAnswer/CardAnswer';
 import Navigation from './components/Navigation/Navigation';
 
 
@@ -11,11 +11,12 @@ const initialState = {
   sessionKey:'',
   allCards: [],
   card: {
-    cardId: 0,
-    cardText: ''
+    card_id: 0,
+    card_question: '',
+    card_answer: ''
   },
   currentCardIndex: 0,
-  translation: '',
+  showAnswer: false,
   route: 'signin',
   isSignedIn: false,
   user: {
@@ -94,7 +95,7 @@ prevCard = () => {
   
   this.setState({card: this.state.allCards[currentIndex]});
   this.setState({currentCardIndex: (currentIndex)});
-  this.setState({translation: ``});
+  this.setState({showAnswer: false});
   console.log(this.state.card);
 }
 
@@ -111,20 +112,18 @@ nextCard = () => {
   
   this.setState({card: this.state.allCards[currentIndex]});
   this.setState({currentCardIndex: (currentIndex)});
-  this.setState({translation: ``});
+  this.setState({showAnswer: false});
 
   console.log(this.state.card);
 }
 
-translateCard = () => {
-  this.setState({translation: `hello card index value ${this.state.currentCardIndex}`});
+showAnswerCard = () => {
+  console.log("Showing answer...");
+  this.setState({showAnswer: true});
 }
 
-//<button onClick={this.onFetchCards}>Go</button>
-
-
   render() {
-    const { isSignedIn, card, route, translation } = this.state;
+    const { isSignedIn, card, route,showAnswer } = this.state;
     return (
       <div className="App">
         <Navigation isSignedIn={isSignedIn} onRouteChange={this.onRouteChange} />   
@@ -133,13 +132,13 @@ translateCard = () => {
             this.state.allCards.length > 0
             ? 
             <div >
-              <Card card={this.state.card} prevCard={this.prevCard} nextCard={this.nextCard} />
+              <CardQuestion card={card} prevCard={this.prevCard} nextCard={this.nextCard} />
               <div className={`row`}>
                 <div className={`col-md-12 text-center`}>
-                  <button className={`btn btn-info btn-lg`} onClick={this.translateCard}>Auto-Detect <span className={`glyphicon glyphicon-arrow-right`}></span> EN</button>
+                  <button className={`btn btn-info btn-lg`} onClick={this.showAnswerCard}><span className={`glyphicon glyphicon-arrow-down`}></span> Show Answer <span className={`glyphicon glyphicon-arrow-down`}></span></button>
                 </div>
               </div>
-              <Translation translation={translation} />   
+              <CardAnswer cardAnswer={card.card_answer} showAnswer={showAnswer}/>   
             </div>
             :<div>No Cards Loaded Yet</div>            
             )

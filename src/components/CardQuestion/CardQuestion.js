@@ -1,8 +1,8 @@
 import React from 'react';
-import './Card.css';
+import './CardQuestion.css';
 
 
-const Card = ({card={card_text: ''}, prevCard, nextCard}) => {
+const CardQuestion = ({card={card_question: ''}, prevCard, nextCard}) => {
     return <div>
                 <div className={`row`}>
                     <div id="cardOptions"className={`col-md-4 col-md-offset-4`}>
@@ -19,9 +19,7 @@ const Card = ({card={card_text: ''}, prevCard, nextCard}) => {
                 </div>
                 <div className={`row`}>
                     <div  id="cardFrame" className={`col-md-4 col-md-offset-4`}>
-                        <span id="cardText" className={`h2`}>{card.card_text}</span>
-                        
-                        
+                        <span id="cardText" className={`h2`}>{card.card_question}</span>
                     </div>
                     <div className={`col-md-1 col-md-offset-0`}>
                     
@@ -31,5 +29,4 @@ const Card = ({card={card_text: ''}, prevCard, nextCard}) => {
                 </div>
             </div>
 }
-//<button id="nextCard" className={`pull-right btn btn-primary`} onClick={getCards}><i className={`glyphicon glyphicon-refresh`}></i></button>
-export default Card;
+export default CardQuestion;
