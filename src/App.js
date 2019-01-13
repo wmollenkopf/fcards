@@ -2,8 +2,10 @@ import React, { Component } from 'react';
 import './App.css';
 import Signin from './components/Signin/Signin';
 import Register from './components/Register/Register';
+import CardOptions from './components/CardOptions/CardOptions';
 import CardQuestion from './components/CardQuestion/CardQuestion';
 import CardAnswer from './components/CardAnswer/CardAnswer';
+import ShowAnswerButton from './components/ShowAnswerButton/ShowAnswerButton';
 import Navigation from './components/Navigation/Navigation';
 
 
@@ -122,6 +124,12 @@ showAnswerCard = () => {
   this.setState({showAnswer: true});
 }
 
+showQuestionCard = () => {
+  console.log("Showing question...");
+  this.setState({showAnswer: false});
+}
+
+//<ShowAnswerButton showAnswerCard={this.showAnswerCard} showAnswer={showAnswer} />
   render() {
     const { isSignedIn, card, route,showAnswer } = this.state;
     return (
@@ -132,13 +140,10 @@ showAnswerCard = () => {
             this.state.allCards.length > 0
             ? 
             <div >
-              <CardQuestion card={card} prevCard={this.prevCard} nextCard={this.nextCard} />
-              <div className={`row`}>
-                <div className={`col-md-12 text-center`}>
-                  <button className={`btn btn-info btn-lg`} onClick={this.showAnswerCard}><span className={`glyphicon glyphicon-arrow-down`}></span> Show Answer <span className={`glyphicon glyphicon-arrow-down`}></span></button>
-                </div>
-              </div>
-              <CardAnswer cardAnswer={card.card_answer} showAnswer={showAnswer}/>   
+              <CardOptions prevCard={this.prevCard} nextCard={this.nextCard}  />
+              <CardQuestion card={card} showAnswerCard={this.showAnswerCard} showAnswer={showAnswer} />
+              <CardAnswer cardAnswer={card.card_answer} showAnswer={showAnswer}  showQuestionCard={this.showQuestionCard}/>   
+              <ShowAnswerButton showAnswerCard={this.showAnswerCard} showAnswer={showAnswer} nextCard={this.nextCard} />
             </div>
             :<div>No Cards Loaded Yet</div>            
             )
