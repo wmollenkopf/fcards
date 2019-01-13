@@ -14,12 +14,13 @@ const initialState = {
     cardId: 0,
     cardText: ''
   },
+  currentCardIndex: 0,
   translation: {},
   route: 'signin',
   isSignedIn: false,
   user: {
-    id: '',
-    username: '',
+    id: 4,
+    username: 'biri@biri.me',
     joined: ''
   }
 }
@@ -50,6 +51,54 @@ onRouteChange = (route) => {
 }
 
 
+componentDidMount() {
+  // Go ahead and load all of the cards for this user, if the user is logged in...
+  if(this.state.user) {
+    this.getCards();
+  }
+}
+
+getCards = () => {
+  console.log("Start");
+  fetch('http://localhost:3000/getcards', {
+    method: 'post',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({
+      userId: this.props.userId,
+      sessionKey: this.props.sessionKey
+    })
+  })
+    .then(response => response.json())
+    .then(data => {
+      console.log("data",data);
+      this.setState({allCards: data});
+      if(data.length>0){
+        this.setState({card: data[0]});
+        this.setState({currentCardIndex: 0});
+      }
+      
+      return data;
+    })
+    .catch(err => console.log(err))
+}
+
+nextCard = () => {
+
+  let currentIndex = this.state.currentCardIndex;
+  
+  if((currentIndex+1)>=this.state.allCards.length) {
+      this.setState({currentCardIndex: 0});
+      currentIndex = 0;
+  } else {
+    currentIndex++;
+  }
+  
+  this.setState({card: this.state.allCards[currentIndex]});
+  this.setState({currentCardIndex: (currentIndex)});
+  
+  console.log(this.state.card);
+}
+
 //<button onClick={this.onFetchCards}>Go</button>
 
 
@@ -59,8 +108,11 @@ onRouteChange = (route) => {
       <div className="App">
         <Navigation isSignedIn={isSignedIn} onRouteChange={this.onRouteChange} />   
         { route !== 'home'
-          ? <div>
-              <Card userId={this.state.userId} sessionKey={this.state.sessionKey} />
+          ? (
+            this.state.allCards.length > 0
+            ? 
+            <div >
+              <Card card={this.state.card} nextCard={this.nextCard} />
               <div className={`row`}>
                 <div className={`col-md-12 text-center`}>
                   <div className={`h2`}><span className={`glyphicon glyphicon-arrow-down`}></span></div>
@@ -68,12 +120,14 @@ onRouteChange = (route) => {
               </div>
               <Translation translation={translation} />   
             </div>
+            :<div>No Cards Loaded Yet</div>            
+            )
           : (
              route === 'signin'
              ? <Signin loadUser={this.loadUser} onRouteChange={this.onRouteChange}/>
              : <Register loadUser={this.loadUser} onRouteChange={this.onRouteChange}/>
             )
-}     
+          }     
         
       </div>
     );
