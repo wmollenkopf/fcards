@@ -15,7 +15,7 @@ const initialState = {
     cardText: ''
   },
   currentCardIndex: 0,
-  translation: {},
+  translation: '',
   route: 'signin',
   isSignedIn: false,
   user: {
@@ -82,6 +82,22 @@ getCards = () => {
     .catch(err => console.log(err))
 }
 
+prevCard = () => {
+
+  let currentIndex = this.state.currentCardIndex;
+  if((currentIndex-1)<= 0) {
+    currentIndex = (this.state.allCards.length-1);  
+    this.setState({currentCardIndex: currentIndex});
+  } else {
+    currentIndex--;
+  }
+  
+  this.setState({card: this.state.allCards[currentIndex]});
+  this.setState({currentCardIndex: (currentIndex)});
+  this.setState({translation: ``});
+  console.log(this.state.card);
+}
+
 nextCard = () => {
 
   let currentIndex = this.state.currentCardIndex;
@@ -95,8 +111,13 @@ nextCard = () => {
   
   this.setState({card: this.state.allCards[currentIndex]});
   this.setState({currentCardIndex: (currentIndex)});
-  
+  this.setState({translation: ``});
+
   console.log(this.state.card);
+}
+
+translateCard = () => {
+  this.setState({translation: `hello card index value ${this.state.currentCardIndex}`});
 }
 
 //<button onClick={this.onFetchCards}>Go</button>
@@ -112,10 +133,10 @@ nextCard = () => {
             this.state.allCards.length > 0
             ? 
             <div >
-              <Card card={this.state.card} nextCard={this.nextCard} />
+              <Card card={this.state.card} prevCard={this.prevCard} nextCard={this.nextCard} />
               <div className={`row`}>
                 <div className={`col-md-12 text-center`}>
-                  <div className={`h2`}><span className={`glyphicon glyphicon-arrow-down`}></span></div>
+                  <button className={`btn btn-info btn-lg`} onClick={this.translateCard}>Auto-Detect <span className={`glyphicon glyphicon-arrow-right`}></span> EN</button>
                 </div>
               </div>
               <Translation translation={translation} />   
