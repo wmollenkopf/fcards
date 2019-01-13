@@ -8,6 +8,8 @@ import Navigation from './components/Navigation/Navigation';
 
 
 const initialState = {
+  sessionKey:'',
+  allCards: [],
   card: {
     cardId: 0,
     cardText: ''
@@ -48,6 +50,9 @@ onRouteChange = (route) => {
 }
 
 
+//<button onClick={this.onFetchCards}>Go</button>
+
+
   render() {
     const { isSignedIn, card, route, translation } = this.state;
     return (
@@ -55,7 +60,7 @@ onRouteChange = (route) => {
         <Navigation isSignedIn={isSignedIn} onRouteChange={this.onRouteChange} />   
         { route !== 'home'
           ? <div>
-              <Card card={card} />
+              <Card userId={this.state.userId} sessionKey={this.state.sessionKey} />
               <div className={`row`}>
                 <div className={`col-md-12 text-center`}>
                   <div className={`h2`}><span className={`glyphicon glyphicon-arrow-down`}></span></div>
