@@ -120,8 +120,23 @@ translateCard = () => {
   this.setState({translation: `hello card index value ${this.state.currentCardIndex}`});
 }
 
-//<button onClick={this.onFetchCards}>Go</button>
+handleKeyPress = (event) => {
+  const upArrow = 38;
+  const downArrow = 40;
+  const leftArrow = 37;
+  const rightArrow = 39;
+  
 
+  if(event.key === downArrow){
+    this.translateCard();
+  }
+  else if(event.key === leftArrow){
+    this.prevCard();
+  }
+  else if(event.key === rightArrow){
+    this.nextCard();
+  }
+}
 
   render() {
     const { isSignedIn, card, route, translation } = this.state;
@@ -133,7 +148,7 @@ translateCard = () => {
             this.state.allCards.length > 0
             ? 
             <div >
-              <Card card={this.state.card} prevCard={this.prevCard} nextCard={this.nextCard} />
+              <Card card={card} prevCard={this.prevCard} nextCard={this.nextCard} handleKeyPress={this.handleKeyPress} />
               <div className={`row`}>
                 <div className={`col-md-12 text-center`}>
                   <button className={`btn btn-info btn-lg`} onClick={this.translateCard}>Auto-Detect <span className={`glyphicon glyphicon-arrow-right`}></span> EN</button>
