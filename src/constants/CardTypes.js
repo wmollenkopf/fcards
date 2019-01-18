@@ -1,0 +1,2 @@
+export const QUESTION_CARD = 'QUESTION_CARD'
+export const ANSWER_CARD = 'ANSWER_CARD'
