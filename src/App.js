@@ -176,6 +176,42 @@ saveEditing = () => {
     .catch(err => console.log(err))
 }
 
+createNewCard = () => {
+  console.log(`Creating...`);
+  console.log(this.state.card);
+  
+  this.setState({creating: false});
+  fetch('http://localhost:3000/addcard', {
+    method: 'post',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify(
+      {
+        sessionKey: this.state.sessionKey,
+        "cardQuestion": this.state.card.card_question,
+        "cardAnswer":this.state.card.card_answer
+      }
+      )
+  })
+    .then(response => response.json())
+    .then(data => {
+      console.log("new data",data);
+      //return data;
+    })
+    //.then(this.getCards()) // might not need this for editing actually OR adding cards actually, maybe deleting?
+    .then(() => {
+        const theDeck = this.state.allCards;
+        theDeck.push(this.state.card);
+        const currentIndex = (this.state.allCards.length-1);  
+        this.setState({currentCardIndex: currentIndex});
+        //theDeck[this.state.currentCardIndex] = this.state.card;
+        return theDeck;
+    })
+    .then((theDeck)=>{
+      this.setState({allCards: theDeck});
+    })
+    .then(console.log('created new deck:',this.state.allCards))
+    .catch(err => console.log(err))
+}
 
 handleEditing = (type) => (event) => {
   if(type===QUESTION_CARD) {
@@ -197,7 +233,9 @@ resetCurrentCard = () => {
 }
 
 enableCreating = () => {
-  console.log("Enabling Editing...");
+  console.log("Enabling Creating...");
+  const newCard = Object.assign({},this.state.card,{card_id: '', card_answer: '',card_question: ''});
+  this.setState({card: newCard});
   this.setState({creating: true});
 }
 
@@ -217,7 +255,7 @@ enableCreating = () => {
               <CardQuestion card={card} resetCurrentCard={this.resetCurrentCard} showAnswer={showAnswer} editing={editing} saveEditing={this.saveEditing} handleEditing={this.handleEditing} creating={creating} />
               <CardAnswer card={card} resetCurrentCard={this.resetCurrentCard} showAnswer={showAnswer} editing={editing} saveEditing={this.saveEditing} handleEditing={this.handleEditing}  creating={creating}/>
               <ShowAnswerButton visible={!(editing || creating)} showAnswerCard={this.showAnswerCard} showAnswer={showAnswer} nextCard={this.nextCard} />
-              <CreateCardsButtons resetCurrentCard={this.resetCurrentCard} creating={creating}/>
+              <CreateCardsButtons resetCurrentCard={this.resetCurrentCard} creating={creating} createNewCard={this.createNewCard} />
             </div>
             :<div>No Cards Loaded Yet</div>            
             )

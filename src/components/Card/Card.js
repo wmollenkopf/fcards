@@ -16,9 +16,9 @@ const Card = ({card, cardType, editing=false, creating=false, saveEditing, handl
     }
 
     let element;
-    if(!editing) {
+    if(!editing && !creating) {
         element = (<span id="cardText" className={`h2`}>{cardText}</span>);
-    } else {
+    } else if(editing && !creating){
         element = (
             <div>
                 <input id="cardText" onChange={handleEditing(cardType)} className={`form-control input-lg`} defaultValue={cardText} autoFocus={true}/>
@@ -27,7 +27,12 @@ const Card = ({card, cardType, editing=false, creating=false, saveEditing, handl
                     <button onClick={saveEditing} className={`btn btn-success`} aria-label="Save Changes"><i className={`glyphicon glyphicon-floppy-disk`}></i></button>
                 </div>
             </div>);
-    }
+    } else if(!editing && creating){
+    element = (
+        <div>
+            <input onChange={handleEditing(cardType)} className={`form-control input-lg`} defaultValue={cardText} autoFocus={true}/>
+        </div>);
+}
     return <div>
                 <div className={`row`}>
                     <div  style={cardBackground} className={`col-md-4 col-md-offset-4 card-frame`} >
