@@ -6,6 +6,7 @@ import CardOptions from './components/CardOptions/CardOptions';
 import CardQuestion from './components/Card/CardQuestion/CardQuestion';
 import CardAnswer from './components/Card/CardAnswer/CardAnswer';
 import ShowAnswerButton from './components/ShowAnswerButton/ShowAnswerButton';
+import CreateCardsButtons from './components/CreateCardsButtons/CreateCardsButtons';
 import Navigation from './components/Navigation/Navigation';
 import { QUESTION_CARD, ANSWER_CARD } from './constants/CardTypes'
 
@@ -27,7 +28,8 @@ const initialState = {
     username: 'biri@biri.me',
     joined: ''
   },
-  editing: false
+  editing: false,
+  creating: false
 }
 
 class App extends Component {
@@ -186,10 +188,23 @@ handleEditing = (type) => (event) => {
   
 }
 
+resetCurrentCard = () => {
+  const newCard = this.state.allCards[this.state.currentCardIndex];
+  console.log(newCard);
+  this.setState({card: newCard});
+  this.setState({editing: false});
+  this.setState({creating: false});
+}
+
+enableCreating = () => {
+  console.log("Enabling Editing...");
+  this.setState({creating: true});
+}
+
 //<ShowAnswerButton showAnswerCard={this.showAnswerCard} showAnswer={showAnswer} />
   render() {
     console.log("Current Index Now3:",this.state.currentCardIndex);
-    const { isSignedIn, card, route,showAnswer,editing } = this.state;
+    const { isSignedIn, card, route,showAnswer,editing,creating } = this.state;
     return (
       <div className="App">
         <Navigation isSignedIn={isSignedIn} onRouteChange={this.onRouteChange} />   
@@ -198,10 +213,11 @@ handleEditing = (type) => (event) => {
             this.state.allCards.length > 0
             ? 
             <div >
-              <CardOptions prevCard={this.prevCard} nextCard={this.nextCard} enableEditing={this.enableEditing} />
-              <CardQuestion card={card} showAnswer={showAnswer} editing={editing} saveEditing={this.saveEditing} handleEditing={this.handleEditing} />
-              <CardAnswer card={card} showAnswer={showAnswer} editing={editing} saveEditing={this.saveEditing} handleEditing={this.handleEditing}/>
-              <ShowAnswerButton showAnswerCard={this.showAnswerCard} showAnswer={showAnswer} nextCard={this.nextCard} />
+              <CardOptions visible={!(editing || creating)} prevCard={this.prevCard} nextCard={this.nextCard} enableEditing={this.enableEditing} enableCreating={this.enableCreating} />
+              <CardQuestion card={card} resetCurrentCard={this.resetCurrentCard} showAnswer={showAnswer} editing={editing} saveEditing={this.saveEditing} handleEditing={this.handleEditing} creating={creating} />
+              <CardAnswer card={card} resetCurrentCard={this.resetCurrentCard} showAnswer={showAnswer} editing={editing} saveEditing={this.saveEditing} handleEditing={this.handleEditing}  creating={creating}/>
+              <ShowAnswerButton visible={!(editing || creating)} showAnswerCard={this.showAnswerCard} showAnswer={showAnswer} nextCard={this.nextCard} />
+              <CreateCardsButtons resetCurrentCard={this.resetCurrentCard} creating={creating}/>
             </div>
             :<div>No Cards Loaded Yet</div>            
             )

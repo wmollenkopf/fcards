@@ -1,7 +1,9 @@
 import React from 'react';
 
-const ShowAnswerButton = ({showAnswerCard,showAnswer,nextCard}) => {
+const ShowAnswerButton = ({showAnswerCard,showAnswer,nextCard,visible=false}) => {
     // Don't show the "Show Answer" button if the answer is already being shown
+    if(!visible){return <div></div>}
+
     if(showAnswer){
       return <div className={`row`}>
                 <div className={`col-md-12 text-center`}>
