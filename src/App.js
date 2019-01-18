@@ -90,7 +90,7 @@ getCards = () => {
 prevCard = () => {
   
   let currentIndex = this.state.currentCardIndex;
-  if((currentIndex-1)<= 0) {
+  if((currentIndex-1)< 0) {
     currentIndex = (this.state.allCards.length-1);  
     this.setState({currentCardIndex: currentIndex});
   } else {
