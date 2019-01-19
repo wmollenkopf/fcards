@@ -90,7 +90,6 @@ getCards = () => {
 }
 
 prevCard = () => {
-  
   let currentIndex = this.state.currentCardIndex;
   if((currentIndex-1)< 0) {
     currentIndex = (this.state.allCards.length-1);  
@@ -98,12 +97,12 @@ prevCard = () => {
   } else {
     currentIndex--;
   }
-  
-  this.setState({card: this.state.allCards[currentIndex]});
+  const newCard = Object.assign({},this.state.allCards[currentIndex]);
+  this.setState({card: newCard});
   this.setState({currentCardIndex: (currentIndex)});
   this.setState({showAnswer: false});
   console.log(this.state.card);
-  console.log("Current Index Now1:",this.state.currentCardIndex);
+
 }
 
 nextCard = () => {
@@ -117,12 +116,12 @@ nextCard = () => {
     currentIndex++;
   }
   
-  this.setState({card: this.state.allCards[currentIndex]});
+  const newCard = Object.assign({},this.state.allCards[currentIndex]);
+  this.setState({card: newCard});
   this.setState({currentCardIndex: (currentIndex)});
   this.setState({showAnswer: false});
 
   console.log(this.state.card);
-  console.log("Current Index Now2:",this.state.currentCardIndex);
 }
 
 showAnswerCard = () => {
@@ -178,29 +177,30 @@ saveEditing = () => {
 
 createNewCard = () => {
   console.log(`Creating...`);
-  console.log(this.state.card);
   
   this.setState({creating: false});
+  const newCard = Object.assign({},this.state.card);
   fetch('http://localhost:3000/addcard', {
     method: 'post',
     headers: {'Content-Type': 'application/json'},
     body: JSON.stringify(
       {
         sessionKey: this.state.sessionKey,
-        "cardQuestion": this.state.card.card_question,
-        "cardAnswer":this.state.card.card_answer
+        "cardQuestion": newCard.card_question,
+        "cardAnswer":newCard.card_answer
       }
       )
   })
     .then(response => response.json())
     .then(data => {
       console.log("new data",data);
-      //return data;
+      newCard.card_id = data;
+      return newCard;
     })
     //.then(this.getCards()) // might not need this for editing actually OR adding cards actually, maybe deleting?
-    .then(() => {
+    .then((newCard) => {
         const theDeck = this.state.allCards;
-        theDeck.push(this.state.card);
+        theDeck.push(newCard);
         const currentIndex = (this.state.allCards.length-1);  
         this.setState({currentCardIndex: currentIndex});
         //theDeck[this.state.currentCardIndex] = this.state.card;
@@ -208,6 +208,7 @@ createNewCard = () => {
     })
     .then((theDeck)=>{
       this.setState({allCards: theDeck});
+      this.setState({card: newCard});
     })
     .then(console.log('created new deck:',this.state.allCards))
     .catch(err => console.log(err))
@@ -239,9 +240,49 @@ enableCreating = () => {
   this.setState({creating: true});
 }
 
+deleteCard = () => {
+  // Prompt the User if they're sure...
+  // Delete the card from database
+  // Remove the card from local dataset (do not refresh cards)
+  // Run either prevcard or nextcard if index -1 > 0
+  // Otherwise, activate create card click
+
+  // TODO: Prompt the user...
+
+  console.log(`Deleting from Database...`);
+  console.log(this.state.card);
+  
+  this.setState({creating: false});
+  this.setState({editing: false});
+  console.log(`session`,this.state.sessionKey);
+  console.log(`cardId`,this.state.card.card_id);
+  fetch('http://localhost:3000/delcard', {
+    method: 'post',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({sessionKey: this.state.sessionKey, cardId: this.state.card.card_id})
+  })
+    .then(response => response.json())
+    .then(data => {
+      console.log("new data",data);
+      //return data;
+    })
+    //.then(this.getCards()) // might not need this for editing actually OR adding cards actually, maybe deleting?
+    .then(() => {
+        const theDeck = this.state.allCards;
+        const currentIndex=this.state.currentCardIndex
+        theDeck.splice(currentIndex,1);
+        return theDeck;
+    })
+    .then((theDeck)=>{
+      this.setState({allCards: theDeck});
+    })
+    .then(this.prevCard)
+    .then(console.log('created new deck:',this.state.allCards))
+    .catch(err => console.log(err))
+}
+
 //<ShowAnswerButton showAnswerCard={this.showAnswerCard} showAnswer={showAnswer} />
   render() {
-    console.log("Current Index Now3:",this.state.currentCardIndex);
     const { isSignedIn, card, route,showAnswer,editing,creating } = this.state;
     return (
       <div className="App">
@@ -251,7 +292,7 @@ enableCreating = () => {
             this.state.allCards.length > 0
             ? 
             <div >
-              <CardOptions visible={!(editing || creating)} prevCard={this.prevCard} nextCard={this.nextCard} enableEditing={this.enableEditing} enableCreating={this.enableCreating} />
+              <CardOptions visible={!(editing || creating)} prevCard={this.prevCard} nextCard={this.nextCard} enableEditing={this.enableEditing} enableCreating={this.enableCreating} deleteCard={this.deleteCard} />
               <CardQuestion card={card} resetCurrentCard={this.resetCurrentCard} showAnswer={showAnswer} editing={editing} saveEditing={this.saveEditing} handleEditing={this.handleEditing} creating={creating} />
               <CardAnswer card={card} resetCurrentCard={this.resetCurrentCard} showAnswer={showAnswer} editing={editing} saveEditing={this.saveEditing} handleEditing={this.handleEditing}  creating={creating}/>
               <ShowAnswerButton visible={!(editing || creating)} showAnswerCard={this.showAnswerCard} showAnswer={showAnswer} nextCard={this.nextCard} />
