@@ -176,10 +176,16 @@ saveEditing = () => {
 }
 
 createNewCard = () => {
-  console.log(`Creating...`);
   
-  this.setState({creating: false});
+  console.log(`Creating...`);
   const newCard = Object.assign({},this.state.card);
+  this.setState({creating: false});
+  if(!this.state.card.card_question || !this.state.card.card_question) {
+    console.log(`Not enough data to create...`);
+    this.resetCurrentCard()
+    return;
+  }
+
   fetch('http://localhost:3000/addcard', {
     method: 'post',
     headers: {'Content-Type': 'application/json'},
