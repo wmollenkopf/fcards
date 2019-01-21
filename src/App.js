@@ -9,15 +9,16 @@ import CreateCardsButtons from './components/CreateCardsButtons/CreateCardsButto
 import Navigation from './components/Navigation/Navigation';
 import { QUESTION_CARD, ANSWER_CARD } from './constants/CardTypes'
 
+const initialCard = {
+  card_id: 0,
+  card_question: '',
+  card_answer: ''
+};
 
 const initialState = {
   sessionKey:'',
   allCards: [],
-  card: {
-    card_id: 0,
-    card_question: '',
-    card_answer: ''
-  },
+  card: initialCard,
   currentCardIndex: 0,
   showAnswer: false,
   route: 'signin',
@@ -56,6 +57,9 @@ componentDidMount() {
   if(localStorageToken) {
     try {
       this.loadUser({token: localStorageToken});
+      if(!this.state.allCards.length>0) {
+        this.enableCreating();
+      }
     }
     catch (ex) {
       this.performSignOut();
@@ -89,6 +93,14 @@ getCards = (tokenValue=this.state.sessionKey) => {
 }
 
 prevCard = () => {
+  if(!this.state.allCards.length>0) {
+    console.log(`No cards found. Create a new card first.`);
+    this.setState({card: this.initialCard});
+    this.setState({editing: false});
+    this.enableCreating();
+    return;
+  }
+
   let currentIndex = this.state.currentCardIndex;
   if((currentIndex-1)< 0) {
     currentIndex = (this.state.allCards.length-1);  
@@ -105,7 +117,13 @@ prevCard = () => {
 }
 
 nextCard = () => {
-
+  if(!this.state.allCards.length>0) {
+    console.log(`No cards found. Create a new card first.`);
+    this.setState({card: this.initialCard});
+    this.setState({editing: false});
+    this.enableCreating();
+    return;
+  }
   let currentIndex = this.state.currentCardIndex;
   
   if((currentIndex+1)>=this.state.allCards.length) {
@@ -231,11 +249,20 @@ handleEditing = (type) => (event) => {
 }
 
 resetCurrentCard = () => {
-  const newCard = this.state.allCards[this.state.currentCardIndex];
-  console.log(newCard);
-  this.setState({card: newCard});
-  this.setState({editing: false});
-  this.setState({creating: false});
+  if(this.state.allCards.length > 0) {
+    const newCard = this.state.allCards[this.state.currentCardIndex];
+    console.log(newCard);
+    this.setState({card: newCard});
+    this.setState({editing: false});
+    this.setState({creating: false});
+  } else {
+    console.log(`No cards found. Create a new card first.`);
+    this.setState({card: this.initialCard});
+    this.setState({editing: false});
+    this.enableCreating();
+  }
+  
+
 }
 
 enableCreating = () => {
@@ -295,17 +322,16 @@ deleteCard = () => {
       <div className="App">
         <Navigation isSignedIn={isSignedIn} performSignOut={this.performSignOut} />   
         { isSignedIn
-          ? (
-            this.state.allCards.length > 0
-            ? 
+          ? 
+          (
             <div >
+              <h2>Create Card</h2>
               <CardOptions visible={!(editing || creating)} prevCard={this.prevCard} nextCard={this.nextCard} enableEditing={this.enableEditing} enableCreating={this.enableCreating} deleteCard={this.deleteCard} />
               <CardQuestion card={card} resetCurrentCard={this.resetCurrentCard} showAnswer={showAnswer} editing={editing} saveEditing={this.saveEditing} handleEditing={this.handleEditing} creating={creating} />
               <CardAnswer card={card} resetCurrentCard={this.resetCurrentCard} showAnswer={showAnswer} editing={editing} saveEditing={this.saveEditing} handleEditing={this.handleEditing}  creating={creating}/>
               <ShowAnswerButton visible={!(editing || creating)} showAnswerCard={this.showAnswerCard} showAnswer={showAnswer} nextCard={this.nextCard} />
               <CreateCardsButtons resetCurrentCard={this.resetCurrentCard} creating={creating} createNewCard={this.createNewCard} />
-            </div>
-            :<div>You currently do not have any cards, would you like to <button>Create A New Card?</button></div>            
+            </div>          
             )
           : (
              <Signin loadUser={this.loadUser} />
