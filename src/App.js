@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import './App.css';
 import Signin from './components/Signin/Signin';
-import Register from './components/Register/Register';
 import CardOptions from './components/CardOptions/CardOptions';
 import CardQuestion from './components/Card/CardQuestion/CardQuestion';
 import CardAnswer from './components/Card/CardAnswer/CardAnswer';
@@ -12,7 +11,7 @@ import { QUESTION_CARD, ANSWER_CARD } from './constants/CardTypes'
 
 
 const initialState = {
-  sessionKey:'boop',
+  sessionKey:'',
   allCards: [],
   card: {
     card_id: 0,
@@ -23,11 +22,6 @@ const initialState = {
   showAnswer: false,
   route: 'signin',
   isSignedIn: false,
-  user: {
-    user_id: 4,
-    username: 'biri@biri.me',
-    joined: ''
-  },
   editing: false,
   creating: false
 }
@@ -39,40 +33,45 @@ class App extends Component {
   };
 
   loadUser = (data) => {
-    this.setState({user: {
-      id: data.user_id,
-      username: data.username,
-      joined: data.created_at
-    }})
+    
+    if(data && data.token && data.token.length > 0) {
+      this.setState({sessionKey: data.token});
+      this.setState({isSignedIn: true});
+      localStorage.setItem('sessionKey', data.token);
+      this.getCards(data.token);
+    } else {
+      this.performSignOut();
+    }
 }
 
-onRouteChange = (route) => {
-  if (route === 'signout') {
-    this.setState(initialState)
-  } else if (route === 'home') {
-    this.setState({isSignedIn: true})
-  } else {
-    this.setState({route: route});
-  }
-  
+performSignOut = () => {
+    this.setState(initialState);
+    localStorage.removeItem(`sessionKey`);
 }
 
 
 componentDidMount() {
   // Go ahead and load all of the cards for this user, if the user is logged in...
-  if(this.state.user) {
-    this.getCards();
+  const localStorageToken = localStorage.getItem('sessionKey');
+  if(localStorageToken) {
+    try {
+      this.loadUser({token: localStorageToken});
+    }
+    catch (ex) {
+      this.performSignOut();
+    }
+  } else {
+    this.performSignOut();
   }
 }
 
-getCards = () => {
+getCards = (tokenValue=this.state.sessionKey) => {
   console.log("Start");
   fetch('http://localhost:3000/getcards', {
     method: 'post',
     headers: {'Content-Type': 'application/json'},
     body: JSON.stringify({
-      userId: this.state.user.user_id,
-      sessionKey: this.state.sessionKey
+      sessionKey: tokenValue
     })
   })
     .then(response => response.json())
@@ -187,7 +186,7 @@ createNewCard = () => {
   }
 
   fetch('http://localhost:3000/addcard', {
-    method: 'post',
+    method: 'put',
     headers: {'Content-Type': 'application/json'},
     body: JSON.stringify(
       {
@@ -263,7 +262,7 @@ deleteCard = () => {
   console.log(`session`,this.state.sessionKey);
   console.log(`cardId`,this.state.card.card_id);
   fetch('http://localhost:3000/delcard', {
-    method: 'post',
+    method: 'delete',
     headers: {'Content-Type': 'application/json'},
     body: JSON.stringify({sessionKey: this.state.sessionKey, cardId: this.state.card.card_id})
   })
@@ -288,12 +287,14 @@ deleteCard = () => {
 }
 
 //<ShowAnswerButton showAnswerCard={this.showAnswerCard} showAnswer={showAnswer} />
+
+
   render() {
-    const { isSignedIn, card, route,showAnswer,editing,creating } = this.state;
+    const { isSignedIn, card, showAnswer,editing,creating } = this.state;
     return (
       <div className="App">
-        <Navigation isSignedIn={isSignedIn} onRouteChange={this.onRouteChange} />   
-        { route !== 'home'
+        <Navigation isSignedIn={isSignedIn} performSignOut={this.performSignOut} />   
+        { isSignedIn
           ? (
             this.state.allCards.length > 0
             ? 
@@ -304,12 +305,10 @@ deleteCard = () => {
               <ShowAnswerButton visible={!(editing || creating)} showAnswerCard={this.showAnswerCard} showAnswer={showAnswer} nextCard={this.nextCard} />
               <CreateCardsButtons resetCurrentCard={this.resetCurrentCard} creating={creating} createNewCard={this.createNewCard} />
             </div>
-            :<div>No Cards Loaded Yet</div>            
+            :<div>You currently do not have any cards, would you like to <button>Create A New Card?</button></div>            
             )
           : (
-             route === 'signin'
-             ? <Signin loadUser={this.loadUser} onRouteChange={this.onRouteChange}/>
-             : <Register loadUser={this.loadUser} onRouteChange={this.onRouteChange}/>
+             <Signin loadUser={this.loadUser} />
             )
           }     
         

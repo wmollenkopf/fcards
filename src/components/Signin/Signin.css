@@ -1,0 +1,10 @@
+.form-box {
+    border: 1px solid silver;
+    border-radius: 8px;
+    background: grey;
+    padding: 10px;
+    background: linear-gradient(to -45deg, #b1c3c5 0%,#c3cee2 100%);
+    color: rgb(26, 65, 71);
+}
+
+.boxShadow {box-shadow: 2px 3px 4px -2px rgba(0,0,0,0.55);}
