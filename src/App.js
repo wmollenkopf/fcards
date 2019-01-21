@@ -325,7 +325,7 @@ deleteCard = () => {
           ? 
           (
             <div >
-              <h2>Create Card</h2>
+              {creating?(<h2>Create Card</h2>):(editing?(<h2>Edit Card</h2>):(<div></div>))}
               <CardOptions visible={!(editing || creating)} prevCard={this.prevCard} nextCard={this.nextCard} enableEditing={this.enableEditing} enableCreating={this.enableCreating} deleteCard={this.deleteCard} />
               <CardQuestion card={card} resetCurrentCard={this.resetCurrentCard} showAnswer={showAnswer} editing={editing} saveEditing={this.saveEditing} handleEditing={this.handleEditing} creating={creating} />
               <CardAnswer card={card} resetCurrentCard={this.resetCurrentCard} showAnswer={showAnswer} editing={editing} saveEditing={this.saveEditing} handleEditing={this.handleEditing}  creating={creating}/>
