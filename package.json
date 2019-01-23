@@ -1,5 +1,5 @@
 {
-  "name": "lang-flash-cards",
+  "name": "fcards",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
