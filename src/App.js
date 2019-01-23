@@ -57,7 +57,7 @@ componentDidMount() {
   if(localStorageToken) {
     try {
       this.loadUser({token: localStorageToken});
-      if(!this.state.allCards.length>0) {
+      if(!(this.state.allCards.length>0)) {
         this.enableCreating();
       }
     }
