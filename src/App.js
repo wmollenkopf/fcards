@@ -9,6 +9,7 @@ import CreateCardsButtons from './components/CreateCardsButtons/CreateCardsButto
 import Navigation from './components/Navigation/Navigation';
 import { QUESTION_CARD, ANSWER_CARD } from './constants/CardTypes'
 
+
 const initialCard = {
   card_id: 0,
   card_question: '',
@@ -24,7 +25,8 @@ const initialState = {
   route: 'signin',
   isSignedIn: false,
   editing: false,
-  creating: false
+  creating: false,
+  fcardServerURL: `http://localhost:3000`,
 }
 
 class App extends Component {
@@ -57,7 +59,7 @@ componentDidMount() {
   if(localStorageToken) {
     try {
       this.loadUser({token: localStorageToken});
-      if(!(this.state.allCards.length>0)) {
+      if(this.state.allCards && !(this.state.allCards.length>0)) {
         this.enableCreating();
       }
     }
@@ -71,7 +73,7 @@ componentDidMount() {
 
 getCards = (tokenValue=this.state.sessionKey) => {
   console.log("Start");
-  fetch('http://localhost:3000/getcards', {
+  fetch(`${this.state.fcardServerURL}/getcards`, {
     method: 'post',
     headers: {'Content-Type': 'application/json'},
     body: JSON.stringify({
@@ -93,7 +95,7 @@ getCards = (tokenValue=this.state.sessionKey) => {
 }
 
 prevCard = () => {
-  if(!this.state.allCards.length>0) {
+  if(this.state.allCards && !(this.state.allCards.length>0)) {
     console.log(`No cards found. Create a new card first.`);
     this.setState({card: this.initialCard});
     this.setState({editing: false});
@@ -117,7 +119,7 @@ prevCard = () => {
 }
 
 nextCard = () => {
-  if(!this.state.allCards.length>0) {
+  if(this.state.allCards && !(this.state.allCards.length>0)) {
     console.log(`No cards found. Create a new card first.`);
     this.setState({card: this.initialCard});
     this.setState({editing: false});
@@ -162,7 +164,7 @@ saveEditing = () => {
   
   // TODO
   this.setState({editing: false});
-  fetch('http://localhost:3000/editcard', {
+  fetch(`${this.state.fcardServerURL}/editcard`, {
     method: 'post',
     headers: {'Content-Type': 'application/json'},
     body: JSON.stringify(
@@ -203,7 +205,7 @@ createNewCard = () => {
     return;
   }
 
-  fetch('http://localhost:3000/addcard', {
+  fetch(`${this.state.fcardServerURL}/addcard`, {
     method: 'put',
     headers: {'Content-Type': 'application/json'},
     body: JSON.stringify(
@@ -288,7 +290,7 @@ deleteCard = () => {
   this.setState({editing: false});
   console.log(`session`,this.state.sessionKey);
   console.log(`cardId`,this.state.card.card_id);
-  fetch('http://localhost:3000/delcard', {
+  fetch(`${this.state.fcardServerURL}/delcard`, {
     method: 'delete',
     headers: {'Content-Type': 'application/json'},
     body: JSON.stringify({sessionKey: this.state.sessionKey, cardId: this.state.card.card_id})
@@ -317,7 +319,7 @@ deleteCard = () => {
 
 
   render() {
-    const { isSignedIn, card, showAnswer,editing,creating } = this.state;
+    const { isSignedIn, card, showAnswer,editing,creating, allCards } = this.state;
     return (
       <div className="App">
         <Navigation isSignedIn={isSignedIn} performSignOut={this.performSignOut} />   
@@ -334,7 +336,7 @@ deleteCard = () => {
             </div>          
             )
           : (
-             <Signin loadUser={this.loadUser} />
+             <Signin fcardServerURL={this.state.fcardServerURL} loadUser={this.loadUser} enableCreating={this.enableCreating} allCards={allCards} />
             )
           }     
         

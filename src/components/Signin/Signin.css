@@ -3,7 +3,8 @@
     border-radius: 8px;
     background: grey;
     padding: 10px;
-    background: linear-gradient(to -45deg, #b1c3c5 0%,#c3cee2 100%);
+    background: #a8c8ca;
+    /* background: linear-gradient(to -45deg, #b1c3c5 0%,#c3cee2 100%); */
     color: rgb(26, 65, 71);
 }
 

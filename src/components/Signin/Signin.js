@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { Component } from 'react';
 import './Signin.css';
 
-class Signin extends React.Component {
+class Signin extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -19,7 +19,8 @@ class Signin extends React.Component {
   }
 
   onSubmitSignIn = () => {
-    fetch('http://localhost:3000/signin', {
+    const url=`${this.props.fcardServerURL}/signin`;
+    fetch(url, {
       method: 'post',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({
@@ -30,14 +31,21 @@ class Signin extends React.Component {
       .then(response => response.json())
       .then(token => {
         if (token) {
-          this.props.loadUser(token)
+          this.props.loadUser(token);
+          if(this.props.allCards && !(this.props.allCards.length>0)) {
+            this.props.enableCreating();
+          }
         }
       })
   }
 
   onSubmitRegister = () => {
+    const url = `${this.props.fcardServerURL}/register`;
+    console.log(`Accessing: ${url}`);
+    console.log(`signInEmail: ${this.state.signInEmail}`);
+    console.log(`signInPassword: ${this.state.signInPassword}`);
     console.log('Creating user...');
-    fetch('http://localhost:3000/register', {
+    fetch(url, {
       method: 'post',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({
@@ -49,8 +57,12 @@ class Signin extends React.Component {
       .then(token => {
         console.log('token',token);
         if (token) {
-          this.props.loadUser(token)
+          this.props.loadUser(token);
+          if(this.props.allCards && !(this.props.allCards.length>0)) {
+            this.props.enableCreating();
+          }
         }
+        
       })
   }
 
