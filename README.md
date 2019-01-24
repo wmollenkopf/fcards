@@ -9,3 +9,5 @@ In the project directory, you can run:
 This will start the project and open a browser window.
 Make sure to run the repository for the server before hand located from wmollenkopf/fcards-server
 If running from two separate hosts you'll want to change localhost to the other address.
+
+Please note, this project is still currently in development as a personal project, and am currently working on polishing up the code, this README.md etc in my spare time.
