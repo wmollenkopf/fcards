@@ -32,9 +32,9 @@ class Signin extends Component {
       .then(token => {
         if (token) {
           this.props.loadUser(token);
-          if(this.props.allCards && !(this.props.allCards.length>0)) {
-            this.props.enableCreating();
-          }
+          // if(this.props.allCards && !(this.props.allCards.length>0)) {
+          //   this.props.enableCreating();
+          // }
         }
       })
   }

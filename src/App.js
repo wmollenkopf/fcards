@@ -4,7 +4,6 @@ import Signin from './components/Signin/Signin';
 import CardOptions from './components/CardOptions/CardOptions';
 import CardQuestion from './components/Card/CardQuestion/CardQuestion';
 import CardAnswer from './components/Card/CardAnswer/CardAnswer';
-import ShowAnswerButton from './components/ShowAnswerButton/ShowAnswerButton';
 import CreateCardsButtons from './components/CreateCardsButtons/CreateCardsButtons';
 import Navigation from './components/Navigation/Navigation';
 import { QUESTION_CARD, ANSWER_CARD } from './constants/CardTypes'
@@ -26,7 +25,7 @@ const initialState = {
   isSignedIn: false,
   editing: false,
   creating: false,
-  fcardServerURL: `http://localhost:3000`,
+  fcardServerURL: `https://fcards-server.biri.me`,
 }
 
 class App extends Component {
@@ -36,12 +35,12 @@ class App extends Component {
   };
 
   loadUser = (data) => {
-    
     if(data && data.token && data.token.length > 0) {
       this.setState({sessionKey: data.token});
       this.setState({isSignedIn: true});
       localStorage.setItem('sessionKey', data.token);
       this.getCards(data.token);
+      
     } else {
       this.performSignOut();
     }
@@ -59,12 +58,11 @@ componentDidMount() {
   if(localStorageToken) {
     try {
       this.loadUser({token: localStorageToken});
-      if(this.state.allCards && !(this.state.allCards.length>0)) {
-        this.enableCreating();
-      }
+      
     }
     catch (ex) {
-      this.performSignOut();
+      console.log('ERROR:',ex);
+      //this.performSignOut();
     }
   } else {
     this.performSignOut();
@@ -72,7 +70,7 @@ componentDidMount() {
 }
 
 getCards = (tokenValue=this.state.sessionKey) => {
-  console.log("Start");
+  console.log("Start",tokenValue);
   fetch(`${this.state.fcardServerURL}/getcards`, {
     method: 'post',
     headers: {'Content-Type': 'application/json'},
@@ -82,14 +80,18 @@ getCards = (tokenValue=this.state.sessionKey) => {
   })
     .then(response => response.json())
     .then(data => {
-      console.log("data",data);
       this.setState({allCards: data});
       if(data.length>0){
         this.setState({card: data[0]});
         this.setState({currentCardIndex: 0});
       }
       
+      
       return data;
+    }).then((data)=>{
+      if(!(data.length>0)){
+        this.enableCreating();
+      }
     })
     .catch(err => console.log(err))
 }
@@ -315,28 +317,65 @@ deleteCard = () => {
     .catch(err => console.log(err))
 }
 
-//<ShowAnswerButton showAnswerCard={this.showAnswerCard} showAnswer={showAnswer} />
-
 
   render() {
+    
     const { isSignedIn, card, showAnswer,editing,creating, allCards } = this.state;
+
     return (
       <div className="App">
-        <Navigation isSignedIn={isSignedIn} performSignOut={this.performSignOut} />   
+        <Navigation 
+          isSignedIn={isSignedIn} 
+          performSignOut={this.performSignOut} 
+        />
         { isSignedIn
           ? 
           (
             <div >
               {creating?(<h2>Create Card</h2>):(editing?(<h2>Edit Card</h2>):(<div></div>))}
-              <CardOptions visible={!(editing || creating)} prevCard={this.prevCard} nextCard={this.nextCard} enableEditing={this.enableEditing} enableCreating={this.enableCreating} deleteCard={this.deleteCard} />
-              <CardQuestion card={card} resetCurrentCard={this.resetCurrentCard} showAnswer={showAnswer} editing={editing} saveEditing={this.saveEditing} handleEditing={this.handleEditing} creating={creating} />
-              <CardAnswer card={card} resetCurrentCard={this.resetCurrentCard} showAnswer={showAnswer} editing={editing} saveEditing={this.saveEditing} handleEditing={this.handleEditing}  creating={creating}/>
-              <ShowAnswerButton visible={!(editing || creating)} showAnswerCard={this.showAnswerCard} showAnswer={showAnswer} nextCard={this.nextCard} />
-              <CreateCardsButtons resetCurrentCard={this.resetCurrentCard} creating={creating} createNewCard={this.createNewCard} />
+              <CardOptions 
+                visible={!(editing || creating)}
+                prevCard={this.prevCard}
+                nextCard={this.nextCard}
+                enableEditing={this.enableEditing}
+                enableCreating={this.enableCreating}
+                deleteCard={this.deleteCard}
+                cardIndex={this.state.currentCardIndex}
+                cardTotal={this.state.allCards.length}
+               />
+              <CardQuestion 
+                card={card} 
+                resetCurrentCard={this.resetCurrentCard}
+                showAnswer={showAnswer}
+                editing={editing}
+                saveEditing={this.saveEditing}
+                handleEditing={this.handleEditing}
+                creating={creating}
+              />
+              <CardAnswer 
+                card={card}
+                resetCurrentCard={this.resetCurrentCard}
+                showAnswer={showAnswer}
+                editing={editing}
+                saveEditing={this.saveEditing}
+                handleEditing={this.handleEditing}
+                creating={creating}
+                showAnswerCard={this.showAnswerCard}
+              />
+              <CreateCardsButtons 
+                resetCurrentCard={this.resetCurrentCard}
+                creating={creating}
+                createNewCard={this.createNewCard}
+              />
             </div>          
             )
           : (
-             <Signin fcardServerURL={this.state.fcardServerURL} loadUser={this.loadUser} enableCreating={this.enableCreating} allCards={allCards} />
+             <Signin 
+              fcardServerURL={this.state.fcardServerURL}
+              loadUser={this.loadUser}
+              enableCreating={this.enableCreating}
+              allCards={allCards}
+             />
             )
           }     
         

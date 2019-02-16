@@ -3,10 +3,20 @@ import Card from '../Card';
 import { ANSWER_CARD} from '../../../constants/CardTypes'
 
 
-const CardAnswer = ({card, showAnswer, editing=false,saveEditing,handleEditing, resetCurrentCard,creating }) => {
-    if(!showAnswer && !creating){return <div></div>}
+const CardAnswer = ({card, showAnswer, editing=false,saveEditing,handleEditing, resetCurrentCard,creating,showAnswerCard }) => {
+    //if(!showAnswer && !creating){return <div></div>}
     
-    return <Card card={card} cardType={ANSWER_CARD}  resetCurrentCard={resetCurrentCard}  editing={editing} saveEditing={saveEditing} handleEditing={handleEditing} creating={creating}/>
+    return <Card 
+                card={card} 
+                cardType={ANSWER_CARD}
+                resetCurrentCard={resetCurrentCard}
+                editing={editing}
+                saveEditing={saveEditing}
+                handleEditing={handleEditing}
+                creating={creating}
+                showAnswer={showAnswer}
+                showAnswerCard={showAnswerCard}
+            />
 
     // return  <div>
     //             <div className={`row`}>

@@ -2,9 +2,9 @@ import React from 'react';
 import './CardOptions.css';
 
 
-const CardOptions = ({prevCard, nextCard, enableEditing, visible=false,enableCreating,deleteCard}) => {
+const CardOptions = ({prevCard, nextCard, enableEditing, visible=false,enableCreating,deleteCard,cardIndex=0,cardTotal=0}) => {
     if(!visible){return <div></div>}
-
+    const currentCardNum = (cardTotal>0)?(cardIndex+1):0;
     return  <div className={`row`}>
                 <div id="cardOptions"className={`col-md-4 col-md-offset-4`}>
                     <div className={'pull-left'}>
@@ -15,7 +15,9 @@ const CardOptions = ({prevCard, nextCard, enableEditing, visible=false,enableCre
                     <div className={'pull-right'}>
                         <button id="prevCard" className={`btn btn-primary`} onClick={prevCard}><i className={`glyphicon glyphicon-arrow-left`}></i></button>
                         <button id="nextCard" className={`btn btn-primary`} onClick={nextCard}><i className={`glyphicon glyphicon-arrow-right`}></i></button>    
+                        &nbsp; {currentCardNum}/{cardTotal}
                     </div>
+                    
                 </div>
             </div>
 }
